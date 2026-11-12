@@ -318,7 +318,7 @@ body{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
 </div></div>
 <div class="hud" id="hud"></div><div style="display:none"><div class="rings" id="rings"></div></div>
 <div class="row" id="tabs" role="tablist"></div>
-<div id="v"></div>
+<div id="mis"></div><div id="v"></div>
 <div class="pn"><small>Obra de ficción y juego de preparación ambientado en el género zombi. Los ítems MAN son temas del manual de campo; los EXTRA, sentido común. En una emergencia real llama al 112 y sigue a tu protección civil. Esta app no está afiliada ni respaldada por ningún autor, editorial o franquicia.</small></div>
 <div id="dlg"></div><div id="pop" class="pop"></div><div id="sheet" class="sheet"></div>
 <script>
@@ -864,6 +864,15 @@ if(d.zrst&&confirm("¿Borrar todos tus datos de este dispositivo?")){try{localSt
 if(d.zpre){const q=d.zpre.split(",");S.p=+q[0];S.days=+q[1];S.sc=q[2];closeG();render()}});
 document.addEventListener("change",e=>{if(e.target.id!="zf"||!e.target.files[0])return;const r=new FileReader();r.onload=()=>{try{const cl=o=>{if(typeof o=="string")return o.replace(/[<>]/g,"");if(Array.isArray(o))return o.map(cl);if(o&&typeof o=="object"){const r={};for(const k in o){if(k=="__proto__")continue;r[k]=cl(o[k])}return r}return o};let n=JSON.parse(r.result);if(!n||typeof n!="object"||Array.isArray(n))throw 0;n=cl(n);n.p=Math.min(20,Math.max(1,+n.p||1));n.pets=Math.min(10,Math.max(0,+n.pets||0));n.days=[3,7,14,30].includes(+n.days)?+n.days:7;if(!SC[n.sc])n.sc="A";n.v=1;if(!confirm("Se reemplazará tu partida actual (se guarda una copia interna de seguridad). ¿Continuar?"))return;try{localStorage.setItem("tps_backup",JSON.stringify(S))}catch(_){}for(const k in S)delete S[k];Object.assign(S,n);S.inv=S.inv||{};S.chk=S.chk||{};S.bk=S.bk||{};S.bx=S.bx||{};S.med=S.med||[];S.food=S.food||[];S.ach=S.ach||{};S.sq=S.sq||[];S.pk=S.pk||{};S.pk.L=S.pk.L||50;S.pk.pl=S.pk.pl||{};S.pk.rt=S.pk.rt||{};S.pk.n=S.pk.n||{};S.pk.st=S.pk.st||{};render()}catch(x){alert("Archivo no válido")}};r.readAsText(e.target.files[0])});
 const _r6=render;render=function(){_r6();if(S.tab=="k")ficha()};
+function mis(){const el=$("mis");if(!el)return;el.style.display=(S.tab=="jg"||S.tab=="mn")?"none":"";const f=food(),n=NP(),aut=Math.min(f.d,f.w),obj=S.days,t=new Date().toISOString().slice(0,10),ex=S.food.filter(x=>x.e&&x.e<=t).length,wl=Math.max(0,Math.round(n.w*obj-S.water)),steps=[];
+S.dd=S.dd||[];if(!S.dd.includes(t)){S.dd.push(t);S.dd=S.dd.slice(-90);sv()}
+let st=0;for(let i=0;i<90;i++){const d=new Date(Date.now()-864e5*i).toISOString().slice(0,10);if(S.dd.includes(d))st++;else if(i>0)break}
+if(wl>0)steps.push("💧 Almacena "+wl+" L más de agua (objetivo "+Math.round(n.w*obj)+" L)");
+need().filter(x=>!/Botiquín/.test(x)&&!/Agua potable/.test(x)).slice(0,3).forEach(x=>steps.push("📦 "+esc(x.replace("□ ",""))));
+if(ex)steps.push("⚠️ Retira "+ex+" alimento(s) caducado(s)");
+if(!steps.length)steps.push("✅ Equipo al día. Haz un simulacro o revisa las caducidades");
+el.innerHTML=`<div class="pn"><h2>🎯 PRÓXIMOS PASOS</h2><div class="kp"><div class="k"><b>${aut.toFixed(1)} / ${obj}</b>días de autonomía real</div><div class="k"><b>🔥 ${st}</b>${st==1?"día":"días"} de racha</div></div><div class="bar"><i style="width:${Math.min(100,Math.round(100*aut/obj))}%"></i></div>${steps.slice(0,4).map(x=>`<div class="it">${x}</div>`).join("")}</div>`}
+const _r7=render;render=function(){_r7();mis()};
 render();
 if(!S.ob){S.ob=1;sv();setTimeout(openOB,900)}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
